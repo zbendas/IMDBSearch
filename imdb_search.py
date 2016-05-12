@@ -37,13 +37,27 @@ def get_html_tree(movie_link):
 def trimmer(xpath):
     i = 0
     while i < (len(xpath)-1):
-        print(i, xpath[i], 'END')
         xpath[i] = xpath[i].replace('\n', '')
         xpath[i] = xpath[i].strip()
-        print(i, xpath[i], 'END\n----------')
         i += 1
     # This still returns a list
     return xpath
+
+
+def misc_format(xpath, sep=" | "):
+    i = 0
+    formatted = []
+    while i < (len(xpath)-1):
+        if (i is 0) or (i is 1):
+            formatted.append(xpath[i] + sep)
+            i += 1
+        else:
+            formatted.append(xpath[i])
+            i += 1
+    # This will not properly format if the title doesn't have a genre and a runtime.
+    # Implement logic to fix this in show_misc
+    # Return list of now-formatted data
+    return formatted
 
 
 def show_summary(movie_tree):
@@ -73,14 +87,14 @@ def show_reviews(movie_tree):
 
 
 def show_misc(movie_tree):
-    xpath = movie_tree.xpath('//*[@id="title-overview-widget"]//div[@class="title_wrapper"]/div[@class="subtext"]'
-                             '/child::text()|'
+    xpath = movie_tree.xpath('//*[@id="title-overview-widget"]/div[2]/div[2]/div/div[2]/div[2]/div/meta/@content|'
                              '//*[@id="title-overview-widget"]//div[@class="title_wrapper"]/div[@class="subtext"]'
                              '//*[@itemprop]/text()')
-    print("Untrimmed: \n", xpath)
     xpath = trimmer(xpath)
-    misc = ''.join(xpath)
-    print("Final: \n", misc, sep='')
+    # Send trimmed xpath to be formatted, then join it into string.
+    misc = misc_format(xpath)
+    misc = ''.join(misc)
+    print(misc)
 
 
 def search_imdb(override="", print_summary=True, print_misc=True, print_reviews=True):
