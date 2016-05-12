@@ -34,6 +34,18 @@ def get_html_tree(movie_link):
     return movie_tree
 
 
+def trimmer(xpath):
+    i = 0
+    while i < (len(xpath)-1):
+        print(i, xpath[i], 'END')
+        xpath[i] = xpath[i].replace('\n', '')
+        xpath[i] = xpath[i].strip()
+        print(i, xpath[i], 'END\n----------')
+        i += 1
+    # This still returns a list
+    return xpath
+
+
 def show_summary(movie_tree):
     # Grab the summary (returns as list)
     xpath = movie_tree.xpath('//*[@id="title-overview-widget"]//div[@class="summary_text"]/text()|'
@@ -49,24 +61,37 @@ def show_summary(movie_tree):
         return False
 
 
-def show_rating(movie_tree):
-    # Grab the rating (returns as list)
+def show_reviews(movie_tree):
+    # Grab the review (returns as list)
     xpath = movie_tree.xpath('//*[@id="title-overview-widget"]//div[@class="imdbRating"]//strong/@title')
-    rating = ''.join(xpath)
-    rating = rating.strip()
-    if rating:
-        print(rating, ".", sep='')
+    review = ''.join(xpath)
+    review = review.strip()
+    if review:
+        print(review, ".", sep='')
     else:
-        print("Title is unrated.")
+        print("Title has no reviews.")
 
 
-def search_imdb(override="", print_summary=True, print_rating=True):
+def show_misc(movie_tree):
+    xpath = movie_tree.xpath('//*[@id="title-overview-widget"]//div[@class="title_wrapper"]/div[@class="subtext"]'
+                             '/child::text()|'
+                             '//*[@id="title-overview-widget"]//div[@class="title_wrapper"]/div[@class="subtext"]'
+                             '//*[@itemprop]/text()')
+    print("Untrimmed: \n", xpath)
+    xpath = trimmer(xpath)
+    misc = ''.join(xpath)
+    print("Final: \n", misc, sep='')
+
+
+def search_imdb(override="", print_summary=True, print_misc=True, print_reviews=True):
     # Run search, save results into local variable
     search_string = get_search_results(override)
     # Pass resulting search URL into get_html_tree
     movie_tree = get_html_tree(search_string)
     if print_summary:
         show_summary(movie_tree)
-    if print_rating:
-        show_rating(movie_tree)
+    if print_misc:
+        show_misc(movie_tree)
+    if print_reviews:
+        show_reviews(movie_tree)
     print('\n', end='')
