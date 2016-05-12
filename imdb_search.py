@@ -20,7 +20,7 @@ def get_search_results(override=""):
     else:
         print("No movies with this title found.")
         return False
-    # print "Search result URL: ", search_result[0] #Debug statement
+        # print "Search result URL: ", search_result[0] #Debug statement
 
 
 def show_summary(movie_link):
@@ -31,13 +31,15 @@ def show_summary(movie_link):
     movie_page = requests.get('http://www.imdb.com' + str(movie_link))
     # Generate an HTML tree of movie page
     movie_tree = html.fromstring(movie_page.content)
-    # Grab the summary
-    summary = movie_tree.xpath('//*[@id="title-overview-widget"]//div[@class="summary_text"]/text()')  # returns as list
-    # Strip first item in list of whitespace, saves it back into list.
-    summary[0] = summary[0].strip()
+    # Grab the summary (returns as list)
+    xpath = movie_tree.xpath('//*[@id="title-overview-widget"]//div[@class="summary_text"]/text()|'
+                             '//*[@id="title-overview-widget"]//div[@class="summary_text"]/a/text()')
+    # xpath is converted to string via .join()
+    summary = ''.join(xpath)
+    summary = summary.strip()
     # Return the string summary or error handler if no summary found
-    if summary[0]:
-        print("Summary:", summary[0])
+    if summary:
+        print("Summary:", summary, "\n")
     else:
         print("Summary unavailable for this title.")
         return False
