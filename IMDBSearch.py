@@ -2,34 +2,34 @@ from lxml import html
 import requests
 
 
-def GetSearchResults():
+def get_search_results():
     # Collect user search input
-    SearchText = input("What movie?\n")
+    search_text = input("What movie?\n")
     # Format search URL and grab the search results page
-    SearchPage = requests.get('http://www.imdb.com/find?q=' + str(SearchText).strip() + '&s=tt')
+    search_page = requests.get('http://www.imdb.com/find?q=' + str(search_text).strip() + '&s=tt')
     # Create an HTML tree using html.fromstring
-    SearchTree = html.fromstring(SearchPage.content)
+    search_tree = html.fromstring(search_page.content)
     # Grab the URL of the first movie page in the search results
-    SearchResult = SearchTree.xpath('//td[@class="result_text"][1]/a/@href')
+    search_result = search_tree.xpath('//td[@class="result_text"][1]/a/@href')
     # Return the string that contains the URL, or error handler if it wasn't found
-    if SearchResult:
-        return SearchResult[0].strip()
+    if search_result:
+        return search_result[0].strip()
     else:
         print("No movies with this title found.")
         return False
-    # print "Search result URL: ", SearchResult[0] #Debug statement
+    # print "Search result URL: ", search_result[0] #Debug statement
 
 
-def ShowSummary(movielink):
+def show_summary(movie_link):
     # Determine if passed value is False (which means null value in previous function)
-    if movielink is False:
+    if movie_link is False:
         return False
-    # Passes movielink parameter to requests.get
-    MoviePage = requests.get('http://www.imdb.com' + str(movielink))
+    # Passes movie_link parameter to requests.get
+    movie_page = requests.get('http://www.imdb.com' + str(movie_link))
     # Generate an HTML tree of movie page
-    MovieTree = html.fromstring(MoviePage.content)
+    movie_tree = html.fromstring(movie_page.content)
     # Grab the summary
-    summary = MovieTree.xpath('//*[@id="title-overview-widget"]//div[@class="summary_text"]/text()')  # returns as list
+    summary = movie_tree.xpath('//*[@id="title-overview-widget"]//div[@class="summary_text"]/text()')  # returns as list
     # Strip first item in list of whitespace, saves it back into list.
     summary[0] = summary[0].strip()
     # Return the string summary or error handler if no summary found
@@ -40,10 +40,10 @@ def ShowSummary(movielink):
         return False
 
 
-def SearchIMDB():
+def search_imdb():
     # Run search, save results into local variable
-    SearchString = GetSearchResults()
+    search_string = get_search_results()
     # Pass resulting search URL into ShowSummary
-    ShowSummary(SearchString)
+    show_summary(search_string)
 
-SearchIMDB()
+search_imdb()
