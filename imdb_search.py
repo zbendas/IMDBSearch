@@ -7,7 +7,7 @@ def get_search_results(override=""):
         search_text = override
     else:
         # Collect user search input
-        search_text = input("What movie?\n")
+        search_text = input("What title?\n")
     # Format search URL and grab the search results page
     search_page = requests.get('http://www.imdb.com/find?q=' + str(search_text).strip() + '&s=tt')
     # Create an HTML tree using html.fromstring
