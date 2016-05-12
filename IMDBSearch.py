@@ -4,7 +4,7 @@ import requests
 
 def GetSearchResults():
     # Collect user search input
-    SearchText = raw_input("What movie?\n")
+    SearchText = input("What movie?\n")
     # Format search URL and grab the search results page
     SearchPage = requests.get('http://www.imdb.com/find?q=' + str(SearchText).strip() + '&s=tt')
     # Create an HTML tree using html.fromstring
@@ -15,7 +15,7 @@ def GetSearchResults():
     if SearchResult:
         return SearchResult[0].strip()
     else:
-        print "No movies with this title found."
+        print("No movies with this title found.")
         return False
     # print "Search result URL: ", SearchResult[0] #Debug statement
 
@@ -34,9 +34,9 @@ def ShowSummary(movielink):
     summary[0] = summary[0].strip()
     # Return the string summary or error handler if no summary found
     if summary[0]:
-        print "Summary:", summary[0]
+        print("Summary:", summary[0])
     else:
-        print "Summary unavailable for this title."
+        print("Summary unavailable for this title.")
         return False
 
 
