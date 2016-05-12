@@ -35,25 +35,26 @@ def get_html_tree(movie_link):
 
 
 def trimmer(xpath):
-    i = 0
-    while i < (len(xpath)-1):
-        xpath[i] = xpath[i].replace('\n', '')
-        xpath[i] = xpath[i].strip()
-        i += 1
-    # This still returns a list
-    return xpath
+    # List comprehension wherein for each string in xpath, replace \n with null, then strip whitespaces
+    # Credit: Falcon Taylor-Carter
+    return [text.replace('\n', '').strip() for text in xpath]
 
 
 def misc_format(xpath, sep=" | "):
+    # This could probably be refactored in a list comprehension
     i = 0
     formatted = []
-    while i < (len(xpath)-1):
+    while i <= (len(xpath)-1):
         if (i is 0) or (i is 1):
             formatted.append(xpath[i] + sep)
             i += 1
-        else:
+        elif i is (len(xpath)-1):
             formatted.append(xpath[i])
             i += 1
+        else:
+            formatted.append(xpath[i] + ', ')
+            i += 1
+
     # This will not properly format if the title doesn't have a genre and a runtime.
     # Implement logic to fix this in show_misc
     # Return list of now-formatted data
