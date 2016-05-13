@@ -65,13 +65,13 @@ def misc_format(rating_xpath, runtime_xpath, genre_xpath, sep="  |  "):  # sep h
     return misc_formatted
 
 
-def show_summary(movie_tree):
+def show_summary(movie_tree, movie):
     # Grab the summary (returns as list)
     xpath = movie_tree.xpath('//*[@id="title-overview-widget"]//div[@class="summary_text"]/text()|'
                              '//*[@id="title-overview-widget"]//div[@class="summary_text"]/a/text()')
     # xpath is converted to string via .join()
-    summary = ''.join(xpath)
-    summary = summary.strip()
+    summary = ''.join(xpath).strip()
+    movie.summary = summary
     # Return the string summary or error handler if no summary found
     if summary:
         print("Summary:", summary)
@@ -80,7 +80,7 @@ def show_summary(movie_tree):
         return False
 
 
-def show_reviews(movie_tree):
+def show_reviews(movie_tree, movie):
     # Grab the review (returns as list)
     xpath = movie_tree.xpath('//*[@id="title-overview-widget"]//div[@class="imdbRating"]//strong/@title')
     review = ''.join(xpath)
@@ -91,7 +91,7 @@ def show_reviews(movie_tree):
         print("Title has no reviews.")
 
 
-def show_misc(movie_tree):
+def show_misc(movie_tree, movie):
     rating_xpath = movie_tree.xpath('//*[@id="title-overview-widget"]//div[@class="subtext"]/meta/@content')
     if rating_xpath:
         rating_xpath.append("rating")
@@ -116,12 +116,27 @@ def show_misc(movie_tree):
 def search_imdb(override="", print_summary=True, print_misc=True, print_reviews=True):
     # Run search, save results into local variable
     search_string = get_search_results(override)
+    movie = Movie(override)
     # Pass resulting search URL into get_html_tree
     movie_tree = get_html_tree(search_string)
     if print_summary:
-        show_summary(movie_tree)
+        show_summary(movie_tree, movie)
     if print_misc:
-        show_misc(movie_tree)
+        show_misc(movie_tree, movie)
     if print_reviews:
-        show_reviews(movie_tree)
+        show_reviews(movie_tree, movie)
     print('\n', end='')
+
+
+class Movie:
+    """Base class for all movies"""
+    def __init__(self, title, summary='', rating=None, runtime=None, genre=None):
+        self.title = title
+        self.summary = summary
+        self.rating = rating
+        self.runtime = runtime
+        self.genre = genre
+
+    def __str__(self):
+        return self.title
+
