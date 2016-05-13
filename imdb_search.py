@@ -2,12 +2,8 @@ from lxml import html
 import requests
 
 
-def get_search_results(override=""):
-    if override is not "":
-        search_text = override
-    else:
-        # Collect user search input
-        search_text = input("What title?\n")
+def get_search_results(title):
+    search_text = title
     # Format search URL and grab the search results page
     search_page = requests.get('http://www.imdb.com/find?q=' + str(search_text).strip() + '&s=tt')
     # Create an HTML tree using html.fromstring
@@ -71,72 +67,72 @@ def show_summary(movie_tree, movie):
                              '//*[@id="title-overview-widget"]//div[@class="summary_text"]/a/text()')
     # xpath is converted to string via .join()
     summary = ''.join(xpath).strip()
-    movie.summary = summary
     # Return the string summary or error handler if no summary found
     if summary:
-        print("Summary:", summary)
+        movie.summary = summary
     else:
-        print("Summary unavailable for this title.")
+        movie.summary = "Summary unavailable for this title."
         return False
 
 
 def show_reviews(movie_tree, movie):
     # Grab the review (returns as list)
     xpath = movie_tree.xpath('//*[@id="title-overview-widget"]//div[@class="imdbRating"]//strong/@title')
-    review = ''.join(xpath)
-    review = review.strip()
+    review = ''.join(xpath).strip()
     if review:
-        print(review, ".", sep='')
+        movie.review = review
     else:
-        print("Title has no reviews.")
+        movie.review = "Title has no reviews."
 
 
 def show_misc(movie_tree, movie):
     rating_xpath = movie_tree.xpath('//*[@id="title-overview-widget"]//div[@class="subtext"]/meta/@content')
     if rating_xpath:
-        rating_xpath.append("rating")
-    # print(rating_xpath)  # Debug statement
+        movie.rating = ''.join(rating_xpath)
+    # print(movie.rating)  # Debug statement
 
     runtime_xpath = movie_tree.xpath('//*[@id="title-overview-widget"]//div[@class="subtext"]//'
                                      '*[@itemprop="duration"]/text()')
     if runtime_xpath:
-        runtime_xpath.append("runtime")
-    # print(runtime_xpath)  # Debug statement
-    runtime_xpath = [text.replace('\n', '').strip() for text in runtime_xpath]  # Credit: Falcon Taylor-Carter
+        movie.runtime = ''.join([text.replace('\n', '').strip() for text in runtime_xpath])  # Credit: Falcon Taylor-Carter
+    # print(movie.runtime)  # Debug statement
 
     genre_xpath = movie_tree.xpath('//*[@id="title-overview-widget"]//div[@class="subtext"]//a/'
                                    '*[@itemprop="genre"]/text()')
     if genre_xpath:
-        genre_xpath.append("genre")
+        genre_xpath = ''.join([''.join((item + ', ') for item in genre_xpath[0:-1]), genre_xpath[-1]])
+        movie.genre = genre_xpath
     # print(genre_xpath)  # Debug statement
-    misc = ''.join(misc_format(rating_xpath, runtime_xpath, genre_xpath))
-    print(misc)
 
 
-def search_imdb(override="", print_summary=True, print_misc=True, print_reviews=True):
+def search_imdb(movie, title, debug=False):
     # Run search, save results into local variable
-    search_string = get_search_results(override)
-    movie = Movie(override)
+    if debug:
+        print("Search IMDB called")  # Debug statement
+    search_string = get_search_results(title)
+
     # Pass resulting search URL into get_html_tree
     movie_tree = get_html_tree(search_string)
-    if print_summary:
-        show_summary(movie_tree, movie)
-    if print_misc:
-        show_misc(movie_tree, movie)
-    if print_reviews:
-        show_reviews(movie_tree, movie)
-    print('\n', end='')
+    show_summary(movie_tree, movie)
+    show_misc(movie_tree, movie)
+    show_reviews(movie_tree, movie)
+    if debug:
+        print("Should return")
 
 
 class Movie:
     """Base class for all movies"""
-    def __init__(self, title, summary='', rating=None, runtime=None, genre=None):
+    def __init__(self, title, summary="Summary unavailable", rating="Rating unknown", runtime="Runtime unknown",
+                 genre="Genre unknown", review="No user reviews."):  # Change default argument to "unknown"
         self.title = title
         self.summary = summary
         self.rating = rating
         self.runtime = runtime
         self.genre = genre
+        self.review = review
+        search_imdb(self, self.title)
 
     def __str__(self):
-        return self.title
-
+        printable = ''.join(string for string in [self.title, '\n', self.summary, '\n', self.rating,
+                                                  '  |  ', self.runtime, '  |  ', self.genre, '\n', self.review])
+        return printable
