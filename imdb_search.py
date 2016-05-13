@@ -34,31 +34,35 @@ def get_html_tree(movie_link):
     return movie_tree
 
 
-def trimmer(xpath):
-    # List comprehension wherein for each string in xpath, replace \n with null, then strip whitespaces
-    # Credit: Falcon Taylor-Carter
-    return [text.replace('\n', '').strip() for text in xpath]
-
-
-def misc_format(xpath, sep=" | "):
-    # This could probably be refactored in a list comprehension
-    i = 0
-    formatted = []
-    while i <= (len(xpath)-1):
-        if (i is 0) or (i is 1):
-            formatted.append(xpath[i] + sep)
-            i += 1
-        elif i is (len(xpath)-1):
-            formatted.append(xpath[i])
-            i += 1
+def misc_format(rating_xpath, runtime_xpath, genre_xpath, sep="  |  "):  # sep has formatting intricacies...
+    misc_formatted = []
+    if rating_xpath:
+        if rating_xpath[-1] is not "rating":
+            misc_formatted.append("Rating not found" + sep)  # Using this wording as a debug
         else:
-            formatted.append(xpath[i] + ', ')
-            i += 1
+            misc_formatted.append(rating_xpath[0] + sep)
+    elif not rating_xpath:
+        misc_formatted.append("Not yet rated" + sep)
 
-    # This will not properly format if the title doesn't have a genre and a runtime.
-    # Implement logic to fix this in show_misc
-    # Return list of now-formatted data
-    return formatted
+    if runtime_xpath:
+        if runtime_xpath[-1] is not "runtime":
+            misc_formatted.append("Runtime not found" + sep)  # Using this wording as a debug
+        else:
+            misc_formatted.append(runtime_xpath[0] + sep)
+    elif not runtime_xpath:
+        misc_formatted.append("Runtime unknown" + sep)
+
+    if genre_xpath:
+        if genre_xpath[-1] is not "genre":
+            misc_formatted.append("Genre not found")  # Using this wording as a debug
+        else:
+            genre_list = [(item + ', ') for item in genre_xpath[0:-2]]
+            genre_list.append(genre_xpath[-2])
+            for item in genre_list:
+                misc_formatted.append(item)
+    elif not genre_xpath:
+        misc_formatted.append("Genre unknown")
+    return misc_formatted
 
 
 def show_summary(movie_tree):
@@ -88,13 +92,24 @@ def show_reviews(movie_tree):
 
 
 def show_misc(movie_tree):
-    xpath = movie_tree.xpath('//*[@id="title-overview-widget"]/div[2]/div[2]/div/div[2]/div[2]/div/meta/@content|'
-                             '//*[@id="title-overview-widget"]//div[@class="title_wrapper"]/div[@class="subtext"]'
-                             '//*[@itemprop]/text()')
-    xpath = trimmer(xpath)
-    # Send trimmed xpath to be formatted, then join it into string.
-    misc = misc_format(xpath)
-    misc = ''.join(misc)
+    rating_xpath = movie_tree.xpath('//*[@id="title-overview-widget"]//div[@class="subtext"]/meta/@content')
+    if rating_xpath:
+        rating_xpath.append("rating")
+    # print(rating_xpath)  # Debug statement
+
+    runtime_xpath = movie_tree.xpath('//*[@id="title-overview-widget"]//div[@class="subtext"]//'
+                                     '*[@itemprop="duration"]/text()')
+    if runtime_xpath:
+        runtime_xpath.append("runtime")
+    # print(runtime_xpath)  # Debug statement
+    runtime_xpath = [text.replace('\n', '').strip() for text in runtime_xpath]  # Credit: Falcon Taylor-Carter
+
+    genre_xpath = movie_tree.xpath('//*[@id="title-overview-widget"]//div[@class="subtext"]//a/'
+                                   '*[@itemprop="genre"]/text()')
+    if genre_xpath:
+        genre_xpath.append("genre")
+    # print(genre_xpath)  # Debug statement
+    misc = ''.join(misc_format(rating_xpath, runtime_xpath, genre_xpath))
     print(misc)
 
 
