@@ -87,15 +87,33 @@ def show_reviews(movie_tree):
         print("Title has no reviews.")
 
 
+# def show_misc(movie_tree):
+#     xpath = movie_tree.xpath('//*[@id="title-overview-widget"]/div[2]/div[2]/div/div[2]/div[2]/div/meta/@content|'
+#                              '//*[@id="title-overview-widget"]//div[@class="title_wrapper"]/div[@class="subtext"]'
+#                              '//*[@itemprop]/text()')
+#     xpath = trimmer(xpath)
+#     # Send trimmed xpath to be formatted, then join it into string.
+#     misc = misc_format(xpath)
+#     misc = ''.join(misc)
+#     print(misc)
+
 def show_misc(movie_tree):
-    xpath = movie_tree.xpath('//*[@id="title-overview-widget"]/div[2]/div[2]/div/div[2]/div[2]/div/meta/@content|'
-                             '//*[@id="title-overview-widget"]//div[@class="title_wrapper"]/div[@class="subtext"]'
-                             '//*[@itemprop]/text()')
-    xpath = trimmer(xpath)
-    # Send trimmed xpath to be formatted, then join it into string.
-    misc = misc_format(xpath)
-    misc = ''.join(misc)
-    print(misc)
+    rating_xpath = movie_tree.xpath('//*[@id="title-overview-widget"]//div[@class="subtext"]/meta/@content')
+    if rating_xpath:
+        rating_xpath.append("rating")
+    print(rating_xpath)  # Debug statement
+
+    runtime_xpath = movie_tree.xpath('//*[@id="title-overview-widget"]//div[@class="subtext"]//'
+                                     '*[@itemprop="duration"]/text()')
+    if runtime_xpath:
+        runtime_xpath.append("runtime")
+    print(runtime_xpath)  # Debug statement
+
+    genre_xpath = movie_tree.xpath('//*[@id="title-overview-widget"]//div[@class="subtext"]//a/'
+                                   '*[@itemprop="genre"]/text()')
+    if genre_xpath:
+        genre_xpath.append("genre")
+    print(genre_xpath)  # Debug statement
 
 
 def search_imdb(override="", print_summary=True, print_misc=True, print_reviews=True):
