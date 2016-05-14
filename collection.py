@@ -16,25 +16,14 @@ class Collection:
             self.objects = {}
             self.size = 0
         else:
+            # This definition of objects may need to be revised. Needs to accommodate for being passed
+            # JUST the object, then extract its title
+            # likely a for key, value in objects list comprehension style
             self.objects = objects
             self.size = len(self.objects)
 
     def __len__(self):
         return self.size
-
-    def __getitem__(self, key):
-        # Raises TypeError if key being access is not a string.
-        try:
-            if type(key) is not str:
-                raise TypeError
-            else:
-                item = self.objects[key]
-                return item
-        except TypeError:
-            print("<Collection> TypeError: Key", key, "is not of type \'str\'.")
-        except KeyError:
-            print("<Collection> KeyError:", key, "not found.")
-            return False
 
     def __setitem__(self, key, value):
         # This should raise a TypeError if the key being set is not a string. We want this function to look things
@@ -49,7 +38,22 @@ class Collection:
                 self.size = len(self.objects)
                 return True
         except TypeError:
-            print("<Collection> TypeError: Key", key, "is not of type \'str\'.")
+            print("<Collection> TypeError: Key {", key, "} is not of type \'str\'.")
+            return False
+
+    def __getitem__(self, key):
+        # Raises TypeError if key being access is not a string.
+        try:
+            if type(key) is not str:
+                raise TypeError
+            else:
+                item = self.objects[key]
+                return item
+        except TypeError:
+            print("<Collection> TypeError: Key {", key, "} is not of type \'str\'.")
+            return False
+        except KeyError:
+            print("<Collection> KeyError: {", key, "} not found.")
             return False
 
     def __delitem__(self, key):
@@ -61,11 +65,17 @@ class Collection:
                 self.size = len(self.objects)
                 return True
         except TypeError:
-            print("<Collection> TypeError: Key", key, "is not of type \'str\'.")
+            print("<Collection> TypeError: Key {", key, "} is not of type \'str\'.")
             return False
         except KeyError:
-            print("<Collection> KeyError: Key", key, "not found.")
+            print("<Collection> KeyError: Key {", key, "} not found.")
             return False
+
+    def __iter__(self):
+        return [key for key in self.objects]
+
+    def __iterkeys__(self):  # Suggested inclusion, as this is a map, not just a sequence
+        return self.__iter__()
 
     def __str__(self):
         # This is going to have a LOT of formatting...
