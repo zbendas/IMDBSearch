@@ -1,8 +1,8 @@
 import imdb_search
 
 # Standard tests taken from others
-imdb_search.search_imdb("The Aviator")
-imdb_search.search_imdb("Avatar 3")
+imdb_search.search("The Aviator")
+imdb_search.search("Avatar 3")
 
 # Following tests are attempting to force the "[x] not found" debug statements to print
 print(imdb_search.misc_format(["PG-13", "runtime"], [], []))
