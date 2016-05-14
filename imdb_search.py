@@ -1,6 +1,9 @@
 from lxml import html
 import requests
 
+# Global debug variable, turns on several printed tests
+debug = False
+
 
 def get_search_results(title):
     search_text = title
@@ -86,29 +89,37 @@ def show_reviews(movie_tree, movie):
 
 
 def show_misc(movie_tree, movie):
+    if debug:
+        print("show_misc CALLED")
     rating_xpath = movie_tree.xpath('//*[@id="title-overview-widget"]//div[@class="subtext"]/meta/@content')
     if rating_xpath:
         movie.rating = ''.join(rating_xpath)
-    # print(movie.rating)  # Debug statement
+    if debug:
+        print("Movie rating:", movie.rating)  # Debug statement
 
     runtime_xpath = movie_tree.xpath('//*[@id="title-overview-widget"]//div[@class="subtext"]//'
                                      '*[@itemprop="duration"]/text()')
     if runtime_xpath:
-        movie.runtime = ''.join([text.replace('\n', '').strip() for text in runtime_xpath])  # Credit: Falcon Taylor-Carter
-    # print(movie.runtime)  # Debug statement
+        movie.runtime = ''.join([text.replace('\n', '').strip() for text in runtime_xpath])
+        # Credit: Falcon Taylor-Carter
+    if debug:
+        print("Movie runtime:", movie.runtime)  # Debug statement
 
     genre_xpath = movie_tree.xpath('//*[@id="title-overview-widget"]//div[@class="subtext"]//a/'
                                    '*[@itemprop="genre"]/text()')
     if genre_xpath:
         genre_xpath = ''.join([''.join((item + ', ') for item in genre_xpath[0:-1]), genre_xpath[-1]])
         movie.genre = genre_xpath
-    # print(genre_xpath)  # Debug statement
+    if debug:
+        print("Movie genre:", genre_xpath)  # Debug statement
+    if debug:
+        print("show_misc FINISHED")
 
 
-def search_imdb(movie, title, debug=False):
+def search_imdb(movie, title):
     # Run search, save results into local variable
     if debug:
-        print("Search IMDB called")  # Debug statement
+        print("search_imdb CALLED")  # Debug statement
     search_string = get_search_results(title)
 
     # Pass resulting search URL into get_html_tree
@@ -117,7 +128,7 @@ def search_imdb(movie, title, debug=False):
     show_misc(movie_tree, movie)
     show_reviews(movie_tree, movie)
     if debug:
-        print("Should return")
+        print("search_imdb RETURNING")
 
 
 class Movie:
@@ -136,3 +147,8 @@ class Movie:
         printable = ''.join(string for string in [self.title, '\n', self.summary, '\n', self.rating,
                                                   '  |  ', self.runtime, '  |  ', self.genre, '\n', self.review])
         return printable
+
+    def __repr__(self):
+        return 'Movie(' + ''.join([''.join(string for string in ['\"', self.title, '\", \"', self.summary, '\", \"',
+                                                                 self.rating, '\", \"', self.runtime, '\", \"',
+                                                                 self.genre, '\", \"', self.review, '\")'])])
