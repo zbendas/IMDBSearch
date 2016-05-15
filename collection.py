@@ -7,8 +7,7 @@ class Collection:
 
     # This class may need an update function associated with it, to be called to pull new information on each object.
     # Also, it may be important to catalog what TYPE of item is being added to the collection, e.g. movie
-    # But this may be easier to accomplish with classes that inherit form this one
-    # It almost certainly would, actually.
+    # But this may be easier to accomplish with classes that inherit from this one
 
     def __init__(self, objects=None):
         if objects is None:
@@ -19,7 +18,7 @@ class Collection:
             # This definition of objects may need to be revised. Needs to accommodate for being passed
             # JUST the object, then extract its title
             # likely a for key, value in objects list comprehension style
-            self.objects = objects
+            self.objects = {item.title: item for item in objects}
             self.size = len(self.objects)
 
     def __len__(self):
@@ -72,16 +71,20 @@ class Collection:
             return False
 
     def __iter__(self):
-        return [key for key in self.objects]
+        return iter(key for key in self.objects)
 
     def __iterkeys__(self):  # Suggested inclusion, as this is a map, not just a sequence
         return self.__iter__()
 
     def __str__(self):
-        # This is going to have a LOT of formatting...
-        return
+        output_string = ''
+        for item in iter(self):
+            # Set output to string of the object found at key location in this collection's object dictionary
+            output_string += '\n' + str(self.objects[item]) + '\n'
+            # This should be sorted here, for the sake of organization.
+        return output_string
 
-    # Sort function using sorted([list], key= item.title)
+    # Sort function using sorted([list], key= item.title.lower())
 
     def collect(self, item):
         # Should be used as the default method of adding new items to the collection.
@@ -94,9 +97,9 @@ class Collection:
             # Unable to add by title, object has no title
             print("Could not add to the collection! This item has no title.")
             return False
-        # Currently, Collection disallows unnamed additions. This could be changed later, but would likely
-        # require quite a few changes to the way information is stored, as there would be multiple different
-        # objects known by "unknown" names; i.e., dictionaries cannot have duplicate keys for unique values.
+            # Currently, Collection disallows unnamed additions. This could be changed later, but would likely
+            # require quite a few changes to the way information is stored, as there would be multiple different
+            # objects known by "unknown" names; i.e., dictionaries cannot have duplicate keys for unique values.
 
     def update_item(self, item):
         # Updates an individual item in the collection
