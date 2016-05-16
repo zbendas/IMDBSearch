@@ -41,10 +41,13 @@ class Collection:
             return False
 
     def __getitem__(self, key):
-        # Raises TypeError if key being access is not a string.
+        # Raises TypeError if key being accessed is not a string.
         try:
             if type(key) is not str:
-                raise TypeError
+                if hasattr(key, "title"):
+                    return self.objects[key.title]
+                else:
+                    raise TypeError
             else:
                 item = self.objects[key]
                 return item
@@ -103,13 +106,36 @@ class Collection:
 
     def update_item(self, item):
         # Updates an individual item in the collection
-        # Checks if item is in the collection
-        if self.objects[item.title]:
+
+        # This branch is called if a string is passed to the update_item function
+        if type(item) is str:
+            # No need to check if it has a title, we'll use the string as the title
+            if self.objects[item]:
+                # can_update = hasattr(self.objects[item], "update")
+                # print("Has update:", can_update)
+                if callable(getattr(self.objects[item], "update")):
+                    # Don't need to use item.title here because the item IS its title
+                    self.objects[item].update()
+                    return True
+                else:
+                    print("This item has no way of updating.")
+                    return False
+        # This branch will be called if the item passed to this function is an object
+        # Checks to see if the item has a title, i.e., if the item belongs in the collection, as all objects
+        # that are added to the collection should have a title
+        # PASSING OBJECTS IN THIS WAY MAY BE ENTIRELY POINTLESS, not certain if they will update w/in the collection
+        # or just update themselves... Not certain why you would pass an object to this anyway.
+        elif self.objects[item.title]:
             # Checks if item has update function
-            can_update = getattr(item, "update", None)
-            if callable(can_update):
-                self.objects[item].update()
+            # can_update = hasattr(item, "update")
+            # print("Has update:", can_update)
+            if callable(getattr(item, "update")):
+                # Using item.title here because the title is the key to the object
+                self.objects[item.title].update()
+                return True
             else:
-                print("This item has no way of updating.")
+                print("This item has no way of updating. (called by item)")
+                return False
         else:
             print("This item has not been added to the collection yet. Please add it first.")
+            return False
