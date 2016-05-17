@@ -87,7 +87,9 @@ class Collection:
             # This should be sorted here, for the sake of organization.
         return output_string
 
-    # Sort function using sorted([list], key= item.title.lower())
+    def sort_collection(self):
+        # Maybe use OrderedDict here. Can be imported and supports the sorting of things like this.
+        return "This method not yet implemented!"
 
     def collect(self, item):
         # Should be used as the default method of adding new items to the collection.

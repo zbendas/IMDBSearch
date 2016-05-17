@@ -8,7 +8,8 @@ test_item_functions = False
 test_iteration = False
 test_string = False
 test_collect = False
-test_update = True
+test_update = False
+test_sort = True
 
 if test_init:
     print("INIT TESTS")
@@ -71,3 +72,9 @@ if test_update:
     # update_test.update_item(NBC)  # Test passing item as object
     update_test.update_item("The Nightmare Before Christmas")  # Test passing item as string (as title of item)
     print("~~~~~~~~~~")
+
+if test_sort:
+    print("SORT TEST")
+    sort_test = collection.Collection([imdb_search.Movie("The Aviator"), imdb_search.Movie("Edward Scissorhands"),
+                                       imdb_search.Movie("The Nightmare Before Christmas")])
+    sort_test.sort_collection()
