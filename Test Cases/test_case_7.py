@@ -5,11 +5,19 @@ import imdb_search
 
 test_init = False
 test_item_functions = False
-test_iteration = False
+test_iteration = True
 test_string = False
 test_collect = False
 test_update = False
 test_sort = True
+
+# alphaMovie = imdb_search.Movie("The Nightmare Before Christmas")
+# print(alphaMovie.alpha_title)
+# print(imdb_search.Movie("The Shining").alpha_title, imdb_search.Movie("The Happening").alpha_title,
+#       imdb_search.Movie("The Avengers").alpha_title,
+#       imdb_search.Movie("The Curious Case of Benjamin Button").alpha_title,
+#       imdb_search.Movie("The Incredibles").alpha_title, imdb_search.Movie("Avatar").alpha_title,
+#       imdb_search.Movie("Elf").alpha_title, imdb_search.Movie("Inception").alpha_title, sep='\n')
 
 if test_init:
     print("INIT TESTS")
@@ -22,19 +30,19 @@ if test_init:
 if test_item_functions:
     print("ITEM FUNCTIONS TESTS")
     item_test = collection.Collection()
-    print(item_test.__setitem__("The Aviator", imdb_search.Movie("The Aviator")))
-    print(item_test.__setitem__(9, imdb_search.Movie("9")))
-    print("Size:", item_test.size, '\n', "Objects:", item_test.objects)
+    print(item_test.__setitem__("The Aviator", imdb_search.Movie("The Aviator")))  # True
+    print(item_test.__setitem__(9, imdb_search.Movie("9")))  # False, TypeError
+    print("Size:", item_test.size, '\n', "Objects:", item_test.objects)  # Size: 1
     print("~~~~~~~~~~")
-    print(item_test.__getitem__("The Aviator"))
-    print(item_test.__getitem__(9))
-    print(item_test.__getitem__("The Nightmare Before Christmas"))
+    print(item_test.__getitem__("The Aviator"))  # Returns properly
+    print(item_test.__getitem__(9))  # False, TypeError
+    print(item_test.__getitem__("The Nightmare Before Christmas"))  # False, KeyError
     print("~~~~~~~~~~")
-    print(item_test.__setitem__("Edward Scissorhands", imdb_search.Movie("Edward Scissorhands")))
-    print(item_test.__delitem__("The Aviator"))
-    print("Size:", item_test.size, '\n', "Objects:", item_test.objects)
-    print(item_test.__delitem__(9))
-    print(item_test.__delitem__("The Nightmare Before Christmas"))
+    print(item_test.__setitem__("Edward Scissorhands", imdb_search.Movie("Edward Scissorhands")))  # True
+    print(item_test.__delitem__("The Aviator"))  # True
+    print("Size:", item_test.size, '\n', "Objects:", item_test.objects)  # Size: 1
+    print(item_test.__delitem__(9))  # False, TypeError
+    print(item_test.__delitem__("The Nightmare Before Christmas"))  # False, KeyError
     print("~~~~~~~~~~")
 
 if test_iteration:
@@ -60,7 +68,7 @@ if test_collect:
     print("COLLECT TEST")
     collect_test = collection.Collection()
     Aviator = imdb_search.Movie("The Aviator")
-    print(collect_test.collect(Aviator))
+    print(collect_test.collect(Aviator))  # True
     print(collect_test.objects["The Aviator"])
     print(collect_test[Aviator])
     print("~~~~~~~~~~")
@@ -75,6 +83,7 @@ if test_update:
 
 if test_sort:
     print("SORT TEST")
-    sort_test = collection.Collection([imdb_search.Movie("The Aviator"), imdb_search.Movie("Edward Scissorhands"),
+    sort_test = collection.Collection([imdb_search.Movie("The Aviator"), imdb_search.Movie("Zoolander"),
+                                       imdb_search.Movie("Men in Black"), imdb_search.Movie("Edward Scissorhands"),
                                        imdb_search.Movie("The Nightmare Before Christmas")])
-    sort_test.sort_collection()
+    print(sort_test.sort_collection())

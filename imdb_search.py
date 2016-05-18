@@ -109,7 +109,9 @@ class Movie:
         self.runtime = runtime
         self.genre = genre
         self.review = review
+        self.alpha_title = self.title.lower()
         self.update()
+        self.gen_alpha_title()
 
     def __str__(self):
         return ''.join(string for string in [self.title, '\n', self.summary, '\n', self.rating,
@@ -126,3 +128,11 @@ class Movie:
         get_summary(movie_tree, self)
         get_misc(movie_tree, self)
         get_reviews(movie_tree, self)
+
+    def gen_alpha_title(self):
+        if "The " in self.title[0:4]:
+            self.alpha_title = self.title.replace("The ", '', 1)
+            self.alpha_title += ", The"
+            self.alpha_title = self.alpha_title.lower()
+        else:
+            self.alpha_title = self.title.lower()

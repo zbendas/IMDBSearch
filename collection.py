@@ -1,5 +1,6 @@
 # This will eventually be a program that creates collections of the imdb_search.Movie objects
 # and logs information about the collection into a file that can be read/written.
+from collections import OrderedDict
 
 
 class Collection:
@@ -12,14 +13,17 @@ class Collection:
     def __init__(self, objects=None):
         if objects is None:
             # This branch allows a blank collection to be created.
-            self.objects = {}
+            self.objects = OrderedDict()
             self.size = 0
         else:
             # This definition of objects may need to be revised. Needs to accommodate for being passed
             # JUST the object, then extract its title
             # likely a for key, value in objects list comprehension style
-            self.objects = {item.title: item for item in objects}
+            self.objects = OrderedDict([(item.title, item) for item in objects])
+            # Deprecated: self.objects = {item.title: item for item in objects}
             self.size = len(self.objects)
+            self.sorted_library = OrderedDict()
+            self.sort_collection()
 
     def __len__(self):
         return self.size
@@ -74,7 +78,7 @@ class Collection:
             return False
 
     def __iter__(self):
-        return iter(key for key in self.objects)
+        return iter(key for key in self.sorted_library)
 
     def __iterkeys__(self):  # Suggested inclusion, as this is a map, not just a sequence
         return self.__iter__()
@@ -89,7 +93,14 @@ class Collection:
 
     def sort_collection(self):
         # Maybe use OrderedDict here. Can be imported and supports the sorting of things like this.
-        return "This method not yet implemented!"
+        self.sorted_library = OrderedDict()  # Clear old dict, due to how OrderedDicts work
+        sort_keys = [self.objects[key].alpha_title for key in self.objects]
+        sort_keys = sorted(sort_keys)
+        for key in sort_keys:
+            for item in self.objects:
+                if self.objects[item].alpha_title is key:
+                    self.sorted_library[item] = self.objects[item]
+        return ''.join('\n' + str(self.sorted_library[item]) + '\n' for item in iter(self))
 
     def collect(self, item):
         # Should be used as the default method of adding new items to the collection.
