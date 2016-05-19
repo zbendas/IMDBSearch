@@ -3,7 +3,7 @@
 from collections import OrderedDict
 
 
-class Collection:
+class Library:
     """Base class for all collections"""
 
     # This class may need an update function associated with it, to be called to pull new information on each object.
@@ -23,7 +23,7 @@ class Collection:
             # Deprecated: self.objects = {item.title: item for item in objects}
             self.size = len(self.objects)
             self.sorted_library = OrderedDict()
-            self.sort_collection()
+            self.sort_library()
 
     def __len__(self):
         return self.size
@@ -41,7 +41,7 @@ class Collection:
                 self.size = len(self.objects)
                 return True
         except TypeError:
-            print("<Collection> TypeError: Key {", key, "} is not of type \'str\'.")
+            print("<Library> TypeError: Key {", key, "} is not of type \'str\'.")
             return False
 
     def __getitem__(self, key):
@@ -56,10 +56,10 @@ class Collection:
                 item = self.objects[key]
                 return item
         except TypeError:
-            print("<Collection> TypeError: Key {", key, "} is not of type \'str\'.")
+            print("<Library> TypeError: Key {", key, "} is not of type \'str\'.")
             return False
         except KeyError:
-            print("<Collection> KeyError: {", key, "} not found.")
+            print("<Library> KeyError: {", key, "} not found.")
             return False
 
     def __delitem__(self, key):
@@ -71,10 +71,10 @@ class Collection:
                 self.size = len(self.objects)
                 return True
         except TypeError:
-            print("<Collection> TypeError: Key {", key, "} is not of type \'str\'.")
+            print("<Library> TypeError: Key {", key, "} is not of type \'str\'.")
             return False
         except KeyError:
-            print("<Collection> KeyError: Key {", key, "} not found.")
+            print("<Library> KeyError: Key {", key, "} not found.")
             return False
 
     def __iter__(self):
@@ -91,7 +91,7 @@ class Collection:
             # This should be sorted here, for the sake of organization.
         return output_string
 
-    def sort_collection(self):
+    def sort_library(self):
         # Maybe use OrderedDict here. Can be imported and supports the sorting of things like this.
         self.sorted_library = OrderedDict()  # Clear old dict, due to how OrderedDicts work
         sort_keys = [self.objects[key].alpha_title for key in self.objects]
@@ -113,7 +113,7 @@ class Collection:
             # Unable to add by title, object has no title
             print("Could not add to the collection! This item has no title.")
             return False
-            # Currently, Collection disallows unnamed additions. This could be changed later, but would likely
+            # Currently, Library disallows unnamed additions. This could be changed later, but would likely
             # require quite a few changes to the way information is stored, as there would be multiple different
             # objects known by "unknown" names; i.e., dictionaries cannot have duplicate keys for unique values.
 
@@ -152,3 +152,8 @@ class Collection:
         else:
             print("This item has not been added to the collection yet. Please add it first.")
             return False
+
+    def update_library(self):
+        for item in self.objects:
+            self.update_item(item)
+        
