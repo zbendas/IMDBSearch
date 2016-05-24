@@ -1,6 +1,7 @@
 # This will eventually be a program that creates collections of the imdb_search.Movie objects
 # and logs information about the collection into a file that can be read/written.
 from collections import OrderedDict
+from imdb_search import Movie
 
 
 class Library:
@@ -23,7 +24,7 @@ class Library:
             # Deprecated: self.objects = {item.title: item for item in objects}
             self.size = len(self.objects)
             self.sorted_library = OrderedDict()
-            self.sort_library()
+           # self.sort_library()
 
     def __len__(self):
         return self.size
@@ -83,13 +84,17 @@ class Library:
     def __iterkeys__(self):  # Suggested inclusion, as this is a map, not just a sequence
         return self.__iter__()
 
-    def __str__(self):
+    def __str__(self):  # This isn't currently working...
         output_string = ''
         for item in iter(self):
             # Set output to string of the object found at key location in this collection's object dictionary
             output_string += '\n' + str(self.objects[item]) + '\n'
             # This should be sorted here, for the sake of organization.
         return output_string
+
+    def __repr__(self):  # This also isn't currently working
+        library_repr = 'Library([' + ''.join(item.repr for item in self.objects) + "])"
+        return library_repr
 
     def sort_library(self):
         # Maybe use OrderedDict here. Can be imported and supports the sorting of things like this.
@@ -156,4 +161,4 @@ class Library:
     def update_library(self):
         for item in self.objects:
             self.update_item(item)
-        
+
