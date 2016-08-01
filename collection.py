@@ -152,3 +152,7 @@ class Collection:
         else:
             print("This item has not been added to the collection yet. Please add it first.")
             return False
+
+    def update_all(self):
+        for item in self.objects:
+            self.update_item(item)
