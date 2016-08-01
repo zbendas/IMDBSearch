@@ -1,4 +1,4 @@
-from library import Library
+from collection import Library
 from imdb_search import Movie
 
 repr_movie = Movie("The Nightmare Before Christmas")
